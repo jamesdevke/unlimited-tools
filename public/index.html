@@ -40,30 +40,48 @@
     }
 
     .tools-section {
-      display: none;
-      margin-top: 2rem;
-    }
+  display: none;
+  margin-top: 2rem;
+}
 
-    .tool-card {
-      margin: 1rem auto;
-      padding: 1.5rem;
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      box-shadow: 0 0 10px #00c6ff;
-      max-width: 350px;
-    }
+/* Bigger Card */
+.tool-card {
+  margin: 2rem auto;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 0 20px #00c6ff;
+  max-width: 600px;
+  text-align: center;
+}
 
-    .tool-card.danger {
-      border: 2px solid red;
-      background: rgba(255,0,0,0.1);
-      box-shadow: 0 0 12px red;
-    }
+/* Danger version */
+.tool-card.danger {
+  border: 2px solid red;
+  background: rgba(255, 0, 0, 0.1);
+  box-shadow: 0 0 20px red;
+}
 
-    .tool-card a {
-      text-decoration: none;
-      color: white;
-      font-weight: bold;
-    }
+/* Big Blue Animated Button */
+.tool-card a {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+  box-shadow: 0 0 12px #00c6ff;
+  transition: all 0.3s ease;
+}
+
+.tool-card a:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px #00c6ff, 0 0 30px #0072ff;
+}
 
     .socials {
       margin-top: 2rem;
@@ -105,25 +123,30 @@
   <button onclick="submitUsername()">Continue</button>
 
   <div class="tools-section" id="tools">
-    
-
-    <div class="tool-card danger">
-      <a href="ban.html">🚫 Ban Tool - Dangerous For Whatsapp ban</a>
-    </div>
+  
     <div class="tool-card">
-      <a href="public/unban1.html">✅ Unban Tool version one </a>
-    </div>
-    
+  <h2>BAN V1</h2>
+  <p>very dangerous tool for banning WhatsApp accounts. leacked for free</p>
+  <a href="ban.html">Open Tool</a>
+</div>
+<div class="tool-card">
+  <h2>UNBAN V1</h2>
+  <p>very powerful tool for ubanning WhatsApp accounts. leacked for free</p>
+  <a href="unban.html">Open Tool</a>
+</div>
     <div class="tool-card">
-      <a href="public/unban.html">✅ Unban Tool - version two Recover Access WhatsApp accounts</a>
-    </div>
-    <div class="tool-card">
-      <a href="public/url.html">🔗url shortener - for shortening links </a>
-    </div>
-    
+  <h2>UNBAN V2</h2>
+  <p>very powerful tool for unbanning WhatsApp accounts. leacked for free</p>
+  <a href="unban.html">Open Tool</a>
+</div>
+<div class="tool-card">
+  <h2>URL SHORTER</h2>
+  <p>tool for shortening url. leacked for free</p>
+  <a href="unban.html">Open Tool</a>
+</div>
     <div class="server-note">
-      ⚠️ Server Live: Enjoy Premium Tools By terminator dev.<br/>
-      Do not abuse tools. Admin has access to every entry.
+     <p>read rules first before using any tool here.</p>
+      Do not abuse tools
     </div>
 
     <div class="socials">
