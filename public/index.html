@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tool Access</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      background: linear-gradient(to right, #001F3F, #0074D9);
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    input, button {
+      padding: 0.7rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      margin: 1rem 0;
+    }
+
+    .tools-section {
+      display: none;
+    }
+
+    .tool-card {
+      margin: 1rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      box-shadow: 0 0 10px #00c6ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to My Tools</h1>
+  <p>Enter your username to continue:</p>
+  <input type="text" id="username" placeholder="Your name" />
+  <button onclick="submitUsername()">Continue</button>
+
+  <div class="tools-section" id="tools">
+    <h2>🔧 Available Tools</h2>
+    <div class="tool-card">Obfuscate Easy</div>
+    <div class="tool-card">Encrypt Normal</div>
+    <div class="tool-card">Ultra Obfuscation</div>
+  </div>
+
+  <script>
+    async function submitUsername() {
+      const name = document.getElementById('username').value;
+      if (!name) return alert("Enter a valid username!");
+
+      await fetch('/log-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: name })
+      });
+
+      document.querySelector('input').style.display = 'none';
+      document.querySelector('button').style.display = 'none';
+      document.querySelector('#tools').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
