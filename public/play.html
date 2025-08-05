@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <title>JamesTech · Water Player</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    /* —— RESET —— */
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    /* —— NOTE: only overflow changed here —— */
+    body{
+      font-family:'Poppins',sans-serif;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#09111a;
+      color:#e9f6ff;
+      overflow-x:hidden;      /* keep horizontal hidden  */
+      overflow-y:auto;        /* enable vertical scroll  */
+    }
+
+    /* —— WATER CANVAS —— */
+    #water-bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1}
+
+    /* —— PANEL —— */
+    .container{width:92%;max-width:900px;padding:2.25rem;border-radius:24px;backdrop-filter:blur(14px)saturate(125%);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);box-shadow:0 8px 26px rgba(0,0,0,.45)}
+    h1{text-align:center;font-size:2.1rem;font-weight:600;margin-bottom:1.4rem;letter-spacing:.06em;text-shadow:0 2px 4px rgba(0,0,0,.35)}
+
+    /* —— FORM —— */
+    #search-form{display:flex;gap:.65rem;justify-content:center;margin-bottom:1.4rem}
+    #query{flex:1;padding:.8rem 1.1rem;font-size:1rem;border-radius:999px;border:none;outline:none;background:rgba(255,255,255,.1);color:#fff}
+    button{padding:.8rem 1.4rem;font-weight:600;border:none;border-radius:999px;cursor:pointer;background:linear-gradient(135deg,#2bb8ff 0%,#016dff 100%);color:#fff;transition:transform .22s,box-shadow .22s}
+    button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,123,255,.35)}
+    button:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;transform:none}
+
+    /* —— RESULT CARD —— */
+    .card{display:grid;grid-template-columns:180px 1fr;gap:1.35rem;align-items:center;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:1.15rem;margin-bottom:1.4rem;opacity:0;transform:translateY(20px) scale(.96);transition:opacity .45s,transform .45s}
+    .card.show{opacity:1;transform:translateY(0) scale(1)}
+    .card img{width:100%;border-radius:16px;box-shadow:0 4px 10px rgba(0,0,0,.4)}
+    .info h2{font-size:1.05rem;margin-bottom:.45rem;line-height:1.35}
+    .info p{font-size:.9rem;opacity:.85;margin-bottom:.25rem}
+    .info a{font-size:.9rem;color:#42b0ff;text-decoration:none}
+    .info a:hover{text-decoration:underline}
+
+    /* —— BUTTON WRAP —— */
+    .buttons{display:flex;gap:.65rem;flex-wrap:wrap;margin-top:.8rem}
+    .buttons button{flex:1 1 120px}
+    #play-btn{background:linear-gradient(135deg,#32ffd5 0%,#00b6ff 100%)}
+    #download-btn{background:linear-gradient(135deg,#ffa432 0%,#ff006d 100%)}
+
+    /* —— PLAYER —— */
+    #player{width:100%;margin-top:1rem;border-radius:14px;background:rgba(0,0,0,.35)}
+    .hidden{display:none!important}
+
+    /* —— MOBILE OPTIMISATION —— */
+    @media (max-width:600px){
+      h1{font-size:1.55rem;margin-bottom:1rem}
+      #search-form{flex-direction:column;padding-inline:.25rem}
+      #query{padding:.75rem;font-size:.95rem}
+      button{width:100%;padding:.75rem;font-size:.95rem}
+      .card{grid-template-columns:1fr;text-align:center;padding:1rem}
+      .card img{width:70%;max-width:220px;margin:0 auto 1rem}
+      .buttons button{flex:1 1 45%}
+    }
+
+    /* —— SCROLLBAR —— */
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-thumb{background:#008cff;border-radius:3px}
+  </style>
+</head>
+<body>
+  <canvas id="water-bg"></canvas>
+
+  <div class="container">
+    <h1>JamesTech · Player</h1>
+
+    <form id="search-form">
+      <input id="query" type="text" placeholder="Type a song title or YouTube link &amp; press Enter" autocomplete="off">
+      <button id="search-btn" type="submit">Search</button>
+    </form>
+
+    <!-- RESULT CARD -->
+    <div id="result" class="card hidden">
+      <img id="thumb" src="" alt="Thumbnail">
+      <div class="info">
+        <h2 id="title"></h2>
+        <p>Views: <span id="views"></span></p>
+        <p>Duration: <span id="duration"></span></p>
+        <p>Uploaded: <span id="ago"></span></p>
+        <a id="video-link" href="#" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+
+        <div class="buttons">
+          <button id="play-btn" type="button" disabled>Play ▶</button>
+          <button id="download-btn" type="button" disabled>Download ⬇</button>
+        </div>
+      </div>
+    </div>
+
+    <audio id="player" controls class="hidden"></audio>
+  </div>
+
+  <script>
+  /* ===== WATER BACKGROUND ===== */
+  const canvas=document.getElementById('water-bg');
+  const ctx=canvas.getContext('2d');
+  let W,H,tick=0,waves=[];
+  class Wave{constructor(y,a,l,s){this.y=y;this.a=a;this.l=l;this.s=s;}draw(t){ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W;x++){ctx.lineTo(x,this.y+Math.sin(x/this.l+t)*this.a);}ctx.lineTo(W,H);ctx.closePath();ctx.fill();}}
+  function size(){W=canvas.width=innerWidth;H=canvas.height=innerHeight}
+  addEventListener('resize',size);size();
+  waves=[new Wave(H*.66,26,260,.015),new Wave(H*.69,32,210,.02),new Wave(H*.72,38,170,.025)];
+  (function loop(){tick+=.007;ctx.clearRect(0,0,W,H);ctx.fillStyle='#012f56';waves[0].draw(tick*waves[0].s);ctx.fillStyle='#014c81';waves[1].draw(tick*waves[1].s);ctx.fillStyle='#016dff';waves[2].draw(tick*waves[2].s);requestAnimationFrame(loop)})();
+
+  /* ===== APP LOGIC (Ochinpo API) ===== */
+  const $=id=>document.getElementById(id);
+  const form=$('search-form'),query=$('query'),card=$('result'),thumb=$('thumb'),title=$('title'),views=$('views'),duration=$('duration'),ago=$('ago'),link=$('video-link'),playBtn=$('play-btn'),downloadBtn=$('download-btn'),player=$('player');
+  let audioSrc='';
+
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const q=query.value.trim();
+    if(!q) return;
+    toast('🔍 Searching…');
+
+    // Reset UI for new search
+    card.classList.add('hidden');
+    card.classList.remove('show');
+    playBtn.disabled=true;
+    downloadBtn.disabled=true;
+    player.pause();
+    player.classList.add('hidden');
+
+    try{
+      const r=await fetch(`https://ochinpo-helper.hf.space/yt?query=${encodeURIComponent(q)}`);
+      const d=await r.json();
+      if(!d.result){return toast('❌ No result.');}
+      const info=d.result;
+
+      // Populate card
+      audioSrc=info?.download?.audio||'';
+      title.textContent=info.title||q;
+      thumb.src=info.thumbnail||'';
+      views.textContent=info.views||'—';
+      duration.textContent=info.duration||'—';
+      ago.textContent=info.uploaded||'—';
+      link.href=info.url||'#';
+
+      // Enable buttons if we have an audio source
+      if(audioSrc){
+        playBtn.disabled=false;
+        downloadBtn.disabled=false;
+      }
+
+      card.classList.remove('hidden');
+      // Force reflow so animation triggers if searching multiple times
+      void card.offsetWidth;
+      card.classList.add('show');
+    }catch(err){
+      console.error(err);
+      toast('⚠️ Error fetching data');
+    }
+  });
+
+  playBtn.addEventListener('click',()=>{
+    if(!audioSrc) return toast('❌ Audio not ready.');
+    player.src=audioSrc;
+    player.classList.remove('hidden');
+    player.play().catch(()=>{});
+    toast('🎵 Playing…');
+  });
+
+  downloadBtn.addEventListener('click',()=>{
+    if(!audioSrc) return toast('❌ Audio not ready.');
+    const a=document.createElement('a');
+    a.href=audioSrc;
+    a.download=(title.textContent||'audio').replace(/[^a-z0-9\-]/gi,'_')+'.mp3';
+    document.body.append(a);
+    a.click();
+    a.remove();
+    toast('⬇️ Download started');
+  });
+
+  /* ===== TOAST ===== */
+  function toast(msg,d=3200){
+    const t=document.createElement('div');
+    t.textContent=msg;
+    t.style.cssText='position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.7);padding:.75rem 1.25rem;border-radius:12px;font-size:.9rem;pointer-events:none;opacity:0;transition:opacity .35s;z-index:9999';
+    document.body.append(t);
+    requestAnimationFrame(()=>t.style.opacity=1);
+    setTimeout(()=>{t.style.opacity=0;t.addEventListener('transitionend',()=>t.remove())},d);
+  }
+  </script>
+</body>
+</html>
