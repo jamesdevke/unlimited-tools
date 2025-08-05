@@ -1,0 +1,193 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JamesDev Shortener • Water UI</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Framer Motion (optional subtle animations) -->
+  <script src="https://unpkg.com/framer-motion@10/dist/framer-motion.umd.js"></script>
+  <style>
+    /* Water gradient background */
+    body {
+      background: linear-gradient(180deg, #031f33 0%, #043d5d 50%, #032539 100%);
+      color: #a6f4ff;
+      overflow-x: hidden;
+    }
+    /* Glass card */
+    .glass {
+      background: rgba(3, 37, 57, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    /* Tooltip */
+    .tooltip {
+      position: relative;
+    }
+    .tooltip:hover::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(3, 37, 57, 0.9);
+      color: #a6f4ff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      font-size: 0.75rem;
+    }
+    /* Waves canvas */
+    #waves {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body class="font-mono select-none">
+  <!-- Water Waves Canvas -->
+  <canvas id="waves"></canvas>  <!-- Main Container -->  <div class="min-h-screen flex flex-col items-center justify-center p-4">
+    <div class="w-full max-w-3xl glass rounded-2xl shadow-lg p-8 text-center animate__animated animate__fadeIn">
+      <h1 class="text-3xl md:text-4xl font-bold mb-2 tracking-widest text-cyan-300">TERMINATOR SHORTENER</h1>
+      <p class="text-sm mb-6 text-cyan-200">Advanced multi‑endpoint shortener powered by ©jamesdev</p><!-- URL Input -->
+  <div class="flex flex-col md:flex-row gap-3 w-full">
+    <input id="urlInput" type="url" required placeholder="Paste URL to shorten..." class="flex-1 p-4 rounded-xl border border-cyan-600 bg-[#031f33] text-cyan-200 placeholder-cyan-600 focus:ring-2 focus:ring-cyan-500 outline-none" />
+    <button id="shortenAll" class="bg-cyan-500 hover:bg-cyan-400 active:scale-95 transition text-black font-semibold px-8 py-4 rounded-xl flex items-center justify-center gap-2 tooltip" data-tip="Shorten with all services (recommended)">
+      <i data-lucide="merge"></i> <span>All</span>
+    </button>
+  </div>
+
+  <!-- Individual Service Buttons -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
+    <button class="svc-btn" data-svc="tinyurl">TinyURL</button>
+    <button class="svc-btn" data-svc="cleanuri">CleanURI</button>
+    <button class="svc-btn" data-svc="vgd">v.gd</button>
+    <button class="svc-btn" data-svc="rebrandly">Rebrandly</button>
+    <button class="svc-btn" data-svc="vurl">vURL</button>
+    <button class="svc-btn" data-svc="adfoc">Adfoc</button>
+    <button class="svc-btn col-span-2 sm:col-span-3" data-svc="ssur">S.sur</button>
+  </div>
+
+  <!-- Results -->
+  <div id="results" class="mt-10 space-y-5 w-full"></div>
+</div>
+
+<!-- Footer -->
+<p class="mt-10 text-xs text-cyan-500/60">© 2025 JamesDev • Terminator</p>
+
+  </div>  <!-- Copy Sound (Base64) --><audio id="copySnd" src="data:audio/wav;base64,UklGRhYAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YYYAAAAA" preload="auto"></audio>
+
+  <script>
+    // --- Water Waves Background ---
+    const canvas = document.getElementById('waves');
+    const ctx = canvas.getContext('2d');
+    let W, H, t = 0;
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function drawWave(amplitude, wavelength, speed, yOffset) {
+      ctx.beginPath();
+      for (let x = 0; x < W; x++) {
+        const y = amplitude * Math.sin((x / wavelength) + t * speed) + yOffset;
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(W, H);
+      ctx.lineTo(0, H);
+      ctx.closePath();
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = 'rgba(4, 61, 93, 0.6)';
+      drawWave(20, 180, 0.9, H * 0.7);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(3, 43, 66, 0.8)';
+      drawWave(15, 120, 1.2, H * 0.75);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(2, 34, 52, 0.9)';
+      drawWave(10, 90, 1.7, H * 0.78);
+      ctx.fill();
+      t += 0.015;
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // --- Shortener Logic ---
+    const btnAll = document.getElementById('shortenAll');
+    const svcButtons = document.querySelectorAll('.svc-btn');
+    const results = document.getElementById('results');
+    const urlInput = document.getElementById('urlInput');
+    const copySnd = document.getElementById('copySnd');
+
+    const svcMap = {
+      tinyurl: 'tinyurl',
+      cleanuri: 'cleanuri',
+      vgd: 'vgd',
+      rebrandly: 'rebrandly',
+      vurl: 'vurl',
+      adfoc: 'adfoc',
+      ssur: 'ssur',
+    };
+
+    function buildEndpoint(svc, url) {
+      return `https://api.giftedtech.co.ke/api/tools/${svc}?apikey=gifted&url=${encodeURIComponent(url)}`;
+    }
+
+    async function shorten(svc, url, card) {
+      try {
+        const res = await fetch(buildEndpoint(svc, url));
+        const data = await res.json();
+        const shortUrl = data?.result || data?.short || data?.url || data?.shortUrl || data?.link;
+        if (!shortUrl) throw new Error('Unexpected response');
+        card.querySelector('span').textContent = shortUrl;
+        card.querySelector('button').disabled = false;
+      } catch (err) {
+        card.querySelector('span').textContent = 'Error';
+        card.classList.remove('border-cyan-600');
+        card.classList.add('border-red-600');
+      }
+    }
+
+    function createCard(label) {
+      const card = document.createElement('div');
+      card.className = 'glass border border-cyan-600 rounded-xl p-5 flex flex-col md:flex-row md:items-center gap-4';
+      card.innerHTML = `<strong class="text-cyan-300 min-w-[6rem]">${label}</strong><span class="flex-1 break-all text-left text-cyan-100 text-sm md:text-base">...</span><button class="copy bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-3 py-2 rounded-md disabled:opacity-40" disabled><i data-lucide="copy"></i></button>`;
+      lucide.createIcons();
+      card.querySelector('.copy').addEventListener('click', () => {
+        navigator.clipboard.writeText(card.querySelector('span').textContent);
+        copySnd.currentTime = 0;
+        copySnd.play();
+      });
+      results.prepend(card);
+      return card;
+    }
+
+    function handleService(svc) {
+      const url = urlInput.value.trim();
+      if (!url) return alert('Enter a valid URL');
+      const card = createCard(svc.toUpperCase());
+      shorten(svc, url, card);
+    }
+
+    btnAll.addEventListener('click', () => {
+      Object.keys(svcMap).forEach(handleService);
+    });
+
+    svcButtons.forEach((btn) => {
+      btn.className = 'svc-btn bg-cyan-600 hover:bg-cyan-500 text-black font-semibold py-3 px-5 rounded-xl transition active:scale-95';
+      btn.addEventListener('click', () => handleService(btn.dataset.svc));
+    });
+  </script></body>
+</html>

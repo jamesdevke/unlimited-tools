@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhatsApp Unban Tool V2</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      background: #000;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    video.bg-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.05);
+      z-index: -1;
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 480px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 26px;
+      color: #00d4ff;
+      text-shadow: 0 0 8px #00d4ff;
+    }
+    input#numberInput {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(2,30,47,0.8);
+      color: #0cf;
+      box-shadow: 0 0 12px #00cfff;
+      margin-bottom: 16px;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .actions button {
+      flex: 1;
+      padding: 12px;
+      font-size: 14px;
+      text-align: center;
+      background: linear-gradient(135deg, #007bb8, #00e5ff);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00e5ff;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .actions button:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 15px #00e5ff;
+    }
+    .messages {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: 10px;
+      background: rgba(0, 183, 255, 0.1);
+      padding: 16px;
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 20px rgba(0, 200, 255, 0.2);
+    }
+    .card {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 16px;
+      border-left: 2px solid rgba(0, 229, 255, 0.5);
+      border-radius: 10px;
+      backdrop-filter: blur(4px);
+      position: relative;
+      color: #fff;
+    }
+    .card .email-btn {
+      margin-top: 10px;
+      display: inline-block;
+      background: #00e5ff;
+      color: #000;
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .card .email-btn:hover {
+      background: #00c8e6;
+    }
+  </style>
+</head>
+<body>
+
+  <video class="bg-video" autoplay loop muted>
+    <source src="https://files.catbox.moe/50qplp.mp4" type="video/mp4" />
+  </video>
+
+  <div class="overlay"></div>
+
+  <audio autoplay loop>
+    <source src="https://files.catbox.moe/xpzbnx.mp3" type="audio/mpeg" />
+  </audio>
+
+  <div class="container">
+    <h1>WhatsApp Unban Tool V2</h1>
+    <input type="text" id="numberInput" placeholder="+2547xxxxxxx" />
+    <div class="actions">
+      <button onclick="renderMessages()">Generate Messages</button>
+    </div>
+    <div class="messages" id="messagesBox"></div>
+  </div>
+
+<script>
+  const msgs = [
+    "To the WhatsApp Appeals Team,\n\nThis number is used for urgent security coordination between our site engineers and support teams. Its suspension has caused live communication breakdowns.\n\nWe respectfully request your urgent attention to lift this ban.\n\nPhone: {n}",
+
+    "Dear WhatsApp Team,\n\nWe believe this restriction was triggered by unusual behavior while switching devices. We assure you this was unintentional and are ready to verify all activity.\n\nPlease help us regain access.\n\nPhone: {n}",
+
+    "Hello WhatsApp Support,\n\nAs a licensed medical professional, I use WhatsApp for patient outreach and consultation scheduling. This ban is affecting continuity of care.\n\nPlease restore the number urgently.\n\nPhone: {n}",
+
+    "Dear Moderation Desk,\n\nThis account is linked to our enterprise API integration. A false ban is currently blocking thousands of automated logistics notifications.\n\nWe kindly request prompt reactivation.\n\nPhone: {n}",
+
+    "To WhatsApp Support,\n\nThis number is registered for multi-factor authentication across critical services. Loss of access has locked us out of secure systems.\n\nPlease treat this as a high-priority access case.\n\nPhone: {n}",
+
+    "WhatsApp Review Officer,\n\nI suspect this account may have been flagged due to high-volume group moderation. All activity was within your policies. Kindly reconsider the suspension.\n\nLooking forward to resolution.\n\nPhone: {n}",
+
+    "Hello Team,\n\nThis is a dedicated emergency coordination line used by our disaster response group. Its unavailability is posing operational risks.\n\nPlease review this number and reinstate it immediately.\n\nPhone: {n}",
+
+    "Dear WhatsApp,\n\nI’m a verified merchant using WhatsApp Business to manage orders and customer queries. This block has caused service disruption and revenue loss.\n\nPlease allow me to appeal the suspension.\n\nPhone: {n}",
+
+    "To the Appeals Department,\n\nThis number is my primary login method for business dashboards and API webhooks. The block has rendered several platforms inaccessible.\n\nRequesting immediate review and reinstatement.\n\nPhone: {n}",
+
+    "Hi Support,\n\nMy WhatsApp account was active for school announcements and parent-teacher communication. I’m unaware of any violations and kindly seek reconsideration.\n\nPhone: {n}",
+
+    "To WhatsApp Appeals Department,\n\nThis number is tied to our team's cloud monitoring alerts. Since the block, we’ve been blind to critical infrastructure updates.\n\nWe urgently request a review of this ban.\n\nPhone: {n}",
+
+    "Dear WhatsApp Moderation Team,\n\nI'm the founder of a startup in beta phase. We rely on this number for closed tester feedback loops. The ban is stalling critical iterations.\n\nPlease help us restore it immediately.\n\nPhone: {n}",
+
+    "WhatsApp Compliance Team,\n\nThis number was deactivated following what appears to be an automated false positive. We ask for human review — no ToS breach was intended.\n\nKindly re-enable our access.\n\nPhone: {n}",
+
+    "Hi WhatsApp,\n\nThis is a verified business line connected to customer complaints and refund workflows. We’ve received public backlash over message delays.\n\nPlease reinstate the number as soon as possible.\n\nPhone: {n}",
+
+    "Dear WhatsApp Support Team,\n\nThis account was used for a live event promotion that gathered massive attention. We suspect this sudden spike may have triggered an auto-ban.\n\nWe request urgent manual validation.\n\nPhone: {n}",
+
+    "To WhatsApp Admin,\n\nOur educational program uses this number to coordinate teacher groups across rural zones. We've lost full coordination since the block.\n\nPlease reinstate it as an academic priority.\n\nPhone: {n}",
+
+    "WhatsApp Appeals,\n\nI am the public relations officer for our NGO, and this number is listed across press releases, forms, and donation follow-ups.\n\nA suspension severely hurts our mission visibility. Kindly assist.\n\nPhone: {n}",
+
+    "Hi WhatsApp Review Team,\n\nMy business partners and clients are currently unreachable due to this unexpected restriction. I assure full compliance and request reinstatement.\n\nPhone: {n}",
+
+    "Dear Support,\n\nWe use this account to sync data from our internal CRM bots to WhatsApp groups. This ban has stopped 7 regional teams from reporting.\n\nPlease reactivate this line.\n\nPhone: {n}",
+
+    "To the WhatsApp Review Agent,\n\nI run a certified coaching service. This number was suspended unexpectedly, causing session cancellations and trust concerns.\n\nPlease prioritize review of this account.\n\nPhone: {n}",
+
+    "To WhatsApp Appeals Team,\n\nThis is the CEO of my own startup and I rely entirely on WhatsApp for team coordination. Banning my account has affected business workflows and investor calls.\n\nPlease investigate and restore access immediately.\n\nPhone: {n}",
+
+    "Dear WhatsApp Team,\n\nAs a developer testing automation flows, I believe my number was flagged incorrectly. I take your terms seriously and would like to formally appeal the block placed on my account.\n\nPlease reconsider this suspension.\n\nPhone: {n}",
+
+    "Hello Team,\n\nI manage a large digital community and this number is my lifeline for moderation and user support. I believe the ban is a false positive.\n\nRequesting prompt unban review. Thank you.\n\nPhone: {n}",
+
+    "WhatsApp Support,\n\nI’m an educational content creator with verified presence. My WhatsApp connects me to my audience and student network. The current ban is disrupting scheduled lessons.\n\nPlease resolve this at your earliest.\n\nPhone: {n}",
+
+    "Dear WhatsApp Safety Team,\n\nThis number belongs to an NGO field operator. Any restriction impacts humanitarian coordination. Kindly recheck your decision and allow continued service.\n\nAwaiting your swift action.\n\nPhone: {n}",
+
+    "To the WhatsApp Moderation Team,\n\nI recently switched SIMs and suspect this triggered the ban. I confirm no spam or violations occurred. I request urgent reactivation of my line.\n\nThanks in advance for checking.\n\nPhone: {n}",
+
+    "Respected Review Team,\n\nI’ve used WhatsApp responsibly for years. This ban was unexpected and I assure you there’s been no breach of guidelines. Kindly restore access.\n\nPhone: {n}",
+
+    "Hello,\n\nThis number is registered under our IT department. We believe the algorithm may have mistakenly flagged our automated logs. Kindly assist in restoring this account.\n\nPhone: {n}",
+
+    "Hi WhatsApp Team,\n\nThis is an urgent access issue. My account is tied to critical medical communications. Any downtime is dangerous. Please review immediately.\n\nPhone: {n}",
+
+    // The shorter/default messages you also provided
+    "Hello WhatsApp, please help restore my account {n}, I believe there’s been a misunderstanding.",
+    "I kindly request a review for {n}, it was banned but I did not violate any policies.",
+    "This is {n}, a verified business number. Please reinstate as it's critical for my operations.",
+    "Dear WhatsApp, the number {n} was banned mistakenly. I seek immediate assistance to restore it.",
+    "{n} is crucial for my family and work communication. Please investigate the ban urgently.",
+    "Requesting urgent help to unban {n}. No spam or violation occurred from my end.",
+    "As the account holder of {n}, I appeal for reconsideration and review of the ban.",
+    "Please verify {n}. This number was mistakenly flagged. I rely on it daily for communication.",
+    "The number {n} was unfairly banned. Kindly reinstate it and let me know the reason.",
+    "I believe my number {n} was banned due to error. I’m ready to cooperate fully to restore it."
+  ];
+
+  function renderMessages() {
+    const n = document.getElementById('numberInput').value.trim();
+    const box = document.getElementById('messagesBox');
+    box.innerHTML = '';
+
+    if (!n.startsWith('+')) return;
+
+    msgs.forEach(text => {
+      // replace all occurrences of {n} with the entered number
+      const msg = text.replace(/\{n\}/g, n);
+
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      // use template literal so ${msg} is injected
+      card.innerHTML = `
+        <div style="white-space: pre-wrap;">${msg}</div>
+        <a class="email-btn" target="_blank"
+           href="mailto:support@support.whatsapp.com?subject=${encodeURIComponent('Unban Request')}&body=${encodeURIComponent(msg)}">
+          Send to WhatsApp Support
+        </a>
+      `;
+
+      box.appendChild(card);
+    });
+  }
+</script>
+
+</body>
+</html>

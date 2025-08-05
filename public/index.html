@@ -2,13 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Tool Access</title>
+  <title>Terminator Tools</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
+    html {
+      scroll-behavior: smooth;
+    }
     body {
+      margin: 0;
+      padding: 0;
       background: linear-gradient(to right, #001F3F, #0074D9);
       color: white;
-      font-family: sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       text-align: center;
       padding: 2rem;
     }
@@ -19,37 +24,132 @@
       border-radius: 8px;
       border: none;
       margin: 1rem 0;
+      width: 90%;
+      max-width: 300px;
+    }
+
+    button {
+      background: #00c6ff;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #005c99;
     }
 
     .tools-section {
       display: none;
+      margin-top: 2rem;
     }
 
     .tool-card {
-      margin: 1rem;
-      padding: 1rem;
+      margin: 1rem auto;
+      padding: 1.5rem;
       background: rgba(255,255,255,0.05);
       border-radius: 12px;
       box-shadow: 0 0 10px #00c6ff;
+      max-width: 350px;
+    }
+
+    .tool-card.danger {
+      border: 2px solid red;
+      background: rgba(255,0,0,0.1);
+      box-shadow: 0 0 12px red;
+    }
+
+    .tool-card a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+    }
+
+    .socials {
+      margin-top: 2rem;
+    }
+
+    .socials a {
+      margin: 0 10px;
+      display: inline-block;
+      transition: transform 0.3s;
+    }
+
+    .socials a:hover {
+      transform: scale(1.2);
+    }
+
+    footer {
+      margin-top: 3rem;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    .server-note {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: rgba(0,255,255,0.1);
+      border: 1px solid #00faff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00faff;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to My Tools</h1>
-  <p>Enter your username to continue:</p>
+  <h1>💀 TERMINATOR TOOLS</h1>
+  <p>created by James x terminator programmers:</p>
   <input type="text" id="username" placeholder="Your name" />
   <button onclick="submitUsername()">Continue</button>
 
   <div class="tools-section" id="tools">
-    <h2>🔧 Available Tools</h2>
-    <div class="tool-card">Obfuscate Easy</div>
-    <div class="tool-card">Encrypt Normal</div>
-    <div class="tool-card">Ultra Obfuscation</div>
+    
+
+    <div class="tool-card danger">
+      <a href="public/ban.html">🚫 Ban Tool - Dangerous For Whatsapp ban</a>
+    </div>
+    <div class="tool-card">
+      <a href="public/unban1.html">✅ Unban Tool version one </a>
+    </div>
+    
+    <div class="tool-card">
+      <a href="public/unban.html">✅ Unban Tool - version two Recover Access WhatsApp accounts</a>
+    </div>
+    <div class="tool-card">
+      <a href="public/url.html">🔗url shortener - for shortening links </a>
+    </div>
+    
+    <div class="server-note">
+      ⚠️ Server Live: Enjoy Premium Tools By terminator dev.<br/>
+      Do not abuse tools. Admin has access to every entry.
+    </div>
+
+    <div class="socials">
+      <a href="https://t.me/trustedjamestechke" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" width="32" />
+      </a>
+      <a href="https://whatsapp.com/channel/0029VaogSY74IBhJWe8b472H" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="32" />
+      </a>
+      <a href="https://github.com" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" width="32" />
+      </a>
+      <!-- YouTube -->
+  <a href="https://youtube.com/@james-j2i9h" target="_blank" title="YouTube Channel">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg" width="32" />
+  </a>
+    </div>
   </div>
+
+  <footer>
+    &copy; 2025 Terminator Team. All Rights Reserved.
+  </footer>
 
   <script>
     async function submitUsername() {
-      const name = document.getElementById('username').value;
+      const name = document.getElementById('username').value.trim();
       if (!name) return alert("Enter a valid username!");
 
       await fetch('/log-user', {
